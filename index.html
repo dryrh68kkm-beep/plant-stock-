@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ร้าน ริลลดาพันธุ์ไม้ · สต็อกต้นไม้</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#16261c;
+    --surface:#213627;
+    --tag-paper:#f3ecdd;
+    --tag-paper-2:#ece3cd;
+    --ink:#2b2418;
+    --ink-soft:#5c5340;
+    --moss:#8ba77e;
+    --moss-deep:#5f7d54;
+    --sun:#e8b94a;
+    --line:rgba(243,236,221,0.12);
+    --line-strong:rgba(243,236,221,0.22);
+    --danger:#c4553f;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:
+      radial-gradient(circle at 12% 8%, rgba(139,167,126,0.14), transparent 45%),
+      radial-gradient(circle at 90% 90%, rgba(181,101,29,0.10), transparent 40%),
+      var(--bg);
+    color:var(--tag-paper);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:28px 20px 80px;}
+
+  .hero{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;
+    border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:26px;}
+  .hero-left{display:flex;align-items:center;gap:14px;}
+  .leaf{width:44px;height:44px;flex:none;}
+  .hero h1{font-family:'Fraunces',serif;font-weight:700;font-size:30px;margin:0;letter-spacing:0.2px;color:var(--tag-paper);}
+  .hero p{margin:2px 0 0;font-size:13px;color:var(--moss);font-family:'IBM Plex Mono',monospace;letter-spacing:0.3px;}
+  .stats{display:flex;gap:22px;}
+  .stat{text-align:right;}
+  .stat .num{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--sun);}
+  .stat .lbl{font-size:11px;color:var(--moss);font-family:'IBM Plex Mono',monospace;}
+
+  .toolbar{display:flex;gap:12px;margin-bottom:22px;flex-wrap:wrap;}
+  .search{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--line-strong);
+    border-radius:10px;padding:11px 14px;color:var(--tag-paper);font-size:14px;font-family:'Inter',sans-serif;}
+  .search::placeholder{color:rgba(243,236,221,0.4);}
+  .search:focus{outline:none;border-color:var(--moss);}
+  .btn-add{background:var(--moss-deep);color:var(--tag-paper);border:none;border-radius:10px;
+    padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+  .btn-add:hover{background:#527046;}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:22px 18px;}
+
+  .card{position:relative;padding-bottom:14px;}
+  .card-body{background:var(--tag-paper);border-radius:12px 12px 4px 4px;overflow:hidden;
+    box-shadow:0 6px 16px rgba(0,0,0,0.28);position:relative;}
+  .card-img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;background:var(--tag-paper-2);}
+  .card-noimg{width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;
+    background:var(--tag-paper-2);color:var(--ink-soft);}
+  .card-info{padding:12px 14px 14px;color:var(--ink);}
+  .card-cat{display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:0.4px;
+    color:var(--moss-deep);background:rgba(95,125,84,0.12);border-radius:20px;padding:3px 9px;margin-bottom:8px;}
+  .card-name{font-family:'Fraunces',serif;font-weight:600;font-size:17px;line-height:1.25;margin:0 0 4px;color:var(--ink);}
+  .card-qty{font-size:12px;color:var(--ink-soft);}
+  .stake{width:26px;height:16px;margin:0 auto;position:relative;}
+  .stake::before{content:'';position:absolute;left:50%;top:0;transform:translateX(-50%);
+    width:0;height:0;border-left:13px solid transparent;border-right:13px solid transparent;
+    border-top:16px solid var(--tag-paper);}
+  .price-tag{position:absolute;top:10px;right:10px;background:var(--sun);color:var(--ink);
+    font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:13px;padding:5px 10px;border-radius:7px;
+    box-shadow:0 3px 8px rgba(0,0,0,0.25);}
+  .card-actions{position:absolute;top:10px;left:10px;display:flex;gap:6px;opacity:0;transition:opacity .15s;}
+  .card:hover .card-actions{opacity:1;}
+  .icon-btn{width:28px;height:28px;border-radius:8px;border:none;background:rgba(43,36,24,0.55);
+    color:var(--tag-paper);display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .icon-btn:hover{background:rgba(43,36,24,0.8);}
+  .icon-btn.danger:hover{background:var(--danger);}
+
+  .empty{text-align:center;padding:70px 20px;color:var(--moss);border:1px dashed var(--line-strong);border-radius:16px;}
+  .empty .leaf{width:38px;height:38px;margin:0 auto 14px;opacity:0.7;}
+  .empty h3{font-family:'Fraunces',serif;color:var(--tag-paper);font-weight:600;margin:0 0 6px;font-size:19px;}
+  .empty p{font-size:13px;margin:0 0 18px;}
+
+  .overlay{position:fixed;inset:0;background:rgba(10,16,12,0.65);display:flex;align-items:center;
+    justify-content:center;padding:20px;z-index:50;}
+  .modal{background:var(--tag-paper);color:var(--ink);border-radius:16px;width:100%;max-width:440px;
+    max-height:90vh;overflow-y:auto;padding:24px 24px 20px;}
+  .modal h2{font-family:'Fraunces',serif;font-size:21px;margin:0 0 18px;font-weight:700;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;
+    font-family:'IBM Plex Mono',monospace;letter-spacing:0.3px;}
+  .field input[type=text],.field input[type=number],.field select,.field textarea{
+    width:100%;border:1px solid #d9cfb5;border-radius:8px;padding:9px 11px;font-size:14px;
+    font-family:'Inter',sans-serif;background:#fff;color:var(--ink);}
+  .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--moss-deep);}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .imgpick{border:1.5px dashed #cabf9e;border-radius:10px;padding:14px;text-align:center;cursor:pointer;
+    position:relative;overflow:hidden;background:#fbf8f0;}
+  .imgpick img{max-width:100%;max-height:140px;border-radius:8px;display:block;margin:0 auto;}
+  .imgpick .hint{font-size:12px;color:var(--ink-soft);}
+  .imgpick input{position:absolute;inset:0;opacity:0;cursor:pointer;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;}
+  .btn-secondary{background:transparent;border:1px solid #d9cfb5;color:var(--ink);padding:10px 16px;
+    border-radius:8px;font-size:14px;cursor:pointer;font-family:'Inter',sans-serif;}
+  .btn-primary{background:var(--moss-deep);border:none;color:#fff;padding:10px 18px;border-radius:8px;
+    font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;}
+  .btn-primary:hover{background:#4d6842;}
+  .btn-primary:disabled{opacity:0.6;cursor:default;}
+  .btn-danger{background:var(--danger);border:none;color:#fff;padding:10px 18px;border-radius:8px;
+    font-size:14px;font-weight:600;cursor:pointer;}
+
+  .name-row{display:flex;gap:8px;}
+  .name-row input{flex:1;}
+  .btn-lookup{flex:none;background:var(--sun);border:none;color:var(--ink);font-weight:600;
+    font-size:12.5px;padding:0 12px;border-radius:8px;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;}
+  .btn-lookup:hover{background:#dbaa3d;}
+  .btn-lookup:disabled{opacity:0.6;cursor:default;}
+  .lookup-status{font-size:12px;margin-top:6px;color:var(--moss-deep);min-height:16px;}
+  .lookup-status.error{color:var(--danger);}
+
+  .meaning-field{background:#fbf1d9;border:1px solid #e6cf94;border-radius:10px;padding:12px 12px 10px;}
+  .meaning-field label{color:#8a6a1f;}
+  .meaning-field textarea{background:#fffaef;border-color:#e6cf94;}
+
+  .mongkol-ribbon{position:absolute;top:0;left:14px;background:#c9962e;color:#fff8e6;
+    font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:0.3px;
+    padding:4px 9px 5px;border-radius:0 0 8px 8px;box-shadow:0 3px 6px rgba(0,0,0,0.25);z-index:2;}
+  .mongkol-belief{background:#fbf1d9;border-top:1px solid #e6cf94;padding:8px 14px 10px;
+    font-size:11.5px;line-height:1.4;color:#7a5c17;display:flex;gap:6px;align-items:flex-start;}
+  .mongkol-belief .ic{flex:none;line-height:1.3;}
+
+  .loading{text-align:center;padding:60px;color:var(--moss);font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  .err-banner{background:rgba(196,85,63,0.15);border:1px solid var(--danger);color:#f1c9c0;
+    border-radius:10px;padding:10px 14px;font-size:13px;margin-bottom:16px;display:none;}
+  .err-banner.show{display:block;}
+
+  @media(max-width:520px){
+    .hero{flex-direction:column;align-items:flex-start;}
+    .stats{gap:14px;}
+    .row2{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-left">
+      <svg class="leaf" viewBox="0 0 44 44" fill="none"><path d="M22 4C10 4 4 14 4 24c0 8 6 14 14 14 0 0 0-8 4-14 4-6 12-8 12-8S30 4 22 4Z" fill="#8ba77e"/><path d="M8 40C8 26 22 22 22 22" stroke="#5f7d54" stroke-width="2" stroke-linecap="round"/></svg>
+      <div>
+        <h1>ร้าน ริลลดาพันธุ์ไม้</h1>
+        <p>PLANT STOCK · เก็บข้อมูลบนอุปกรณ์นี้</p>
+      </div>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num" id="statTypes">0</div><div class="lbl">รายการ</div></div>
+      <div class="stat"><div class="num" id="statQty">0</div><div class="lbl">ต้น/กระถางรวม</div></div>
+      <div class="stat"><div class="num" id="statValue">฿0</div><div class="lbl">มูลค่ารวม</div></div>
+    </div>
+  </div>
+
+  <div class="err-banner" id="errBanner"></div>
+
+  <div class="toolbar">
+    <input class="search" id="searchInput" placeholder="ค้นหาชื่อต้นไม้หรือหมวดหมู่...">
+    <button class="btn-add" id="btnAdd">+ เพิ่มต้นไม้</button>
+  </div>
+
+  <div id="loading" class="loading">กำลังโหลดข้อมูล...</div>
+  <div id="emptyState" class="empty" style="display:none;">
+    <svg class="leaf" viewBox="0 0 44 44" fill="none"><path d="M22 4C10 4 4 14 4 24c0 8 6 14 14 14 0 0 0-8 4-14 4-6 12-8 12-8S30 4 22 4Z" fill="#8ba77e"/><path d="M8 40C8 26 22 22 22 22" stroke="#5f7d54" stroke-width="2" stroke-linecap="round"/></svg>
+    <h3 id="emptyTitle">ยังไม่มีต้นไม้ในสต็อก</h3>
+    <p id="emptyDesc">เริ่มเพิ่มต้นไม้รายการแรกของร้านได้เลย</p>
+    <button class="btn-add" id="btnAddEmpty">+ เพิ่มต้นไม้</button>
+  </div>
+  <div class="grid" id="grid" style="display:none;"></div>
+</div>
+
+<div class="overlay" id="modalOverlay" style="display:none;">
+  <div class="modal">
+    <h2 id="modalTitle">เพิ่มต้นไม้ใหม่</h2>
+    <form id="itemForm">
+      <div class="field">
+        <label>รูปภาพ</label>
+        <div class="imgpick" id="imgPick">
+          <div class="hint" id="imgHint">แตะเพื่อเลือกรูปภาพ</div>
+          <img id="imgPreview" style="display:none;">
+          <input type="file" accept="image/*" id="imgInput">
+        </div>
+      </div>
+      <div class="field">
+        <label>ชื่อต้นไม้ *</label>
+        <div class="name-row">
+          <input type="text" id="fName" required list="plantNameSuggestions" autocomplete="off">
+          <button type="button" class="btn-lookup" id="btnLookup">📖 ค้นฐานข้อมูล</button>
+        </div>
+        <datalist id="plantNameSuggestions"></datalist>
+        <div class="lookup-status" id="lookupStatus"></div>
+      </div>
+      <div class="field">
+        <label>หมวดหมู่</label>
+        <select id="fCategory">
+          <option>ไม้ประดับ</option>
+          <option>ไม้ฟอกอากาศ</option>
+          <option>ไม้อวบน้ำ</option>
+          <option>ไม้ดอก</option>
+          <option>ไม้ผล</option>
+          <option>ไม้มงคล</option>
+          <option>อื่นๆ</option>
+        </select>
+      </div>
+      <div class="field meaning-field" id="meaningField" style="display:none;">
+        <label>🍀 ความหมายมงคล</label>
+        <textarea rows="2" id="fMeaning" placeholder="เช่น เชื่อว่านำโชคลาภ เสริมความเจริญรุ่งเรือง..."></textarea>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>ราคาขาย (บาท)</label>
+          <input type="number" min="0" step="0.01" id="fPrice">
+        </div>
+        <div class="field">
+          <label>ต้นทุน (บาท)</label>
+          <input type="number" min="0" step="0.01" id="fCost">
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field">
+          <label>จำนวนคงเหลือ</label>
+          <input type="number" min="0" id="fQty">
+        </div>
+        <div class="field">
+          <label>หน่วยนับ</label>
+          <input type="text" id="fUnit" placeholder="ต้น / กระถาง" value="ต้น">
+        </div>
+      </div>
+      <div class="field">
+        <label>หมายเหตุ</label>
+        <textarea rows="2" id="fNote"></textarea>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn-secondary" id="btnCancel">ยกเลิก</button>
+        <button type="submit" class="btn-primary" id="btnSave">บันทึก</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="overlay" id="deleteOverlay" style="display:none;">
+  <div class="modal" style="max-width:340px;">
+    <h2>ลบรายการนี้?</h2>
+    <p style="font-size:13px;color:var(--ink-soft);">การลบไม่สามารถย้อนกลับได้</p>
+    <div class="modal-actions">
+      <button class="btn-secondary" id="btnCancelDelete">ยกเลิก</button>
+      <button class="btn-danger" id="btnConfirmDelete">ลบ</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = "plant-stock:catalog";
+let items = [];
+let editingId = null;
+let pendingImage = null;
+let deleteTargetId = null;
+
+const $ = sel => document.querySelector(sel);
+const grid = $('#grid');
+const emptyState = $('#emptyState');
+const loadingEl = $('#loading');
+const errBanner = $('#errBanner');
+
+function showError(msg){
+  errBanner.textContent = msg;
+  errBanner.classList.add('show');
+  setTimeout(()=>errBanner.classList.remove('show'), 4000);
+}
+
+async function loadItems(){
+  loadingEl.style.display = 'block';
+  grid.style.display = 'none';
+  emptyState.style.display = 'none';
+  try{
+    const res = await window.storage.get(STORAGE_KEY, false);
+    items = (res && res.value) ? JSON.parse(res.value) : [];
+  }catch(e){
+    items = [];
+  }
+  loadingEl.style.display = 'none';
+  render();
+}
+
+async function persist(){
+  try{
+    const res = await window.storage.set(STORAGE_KEY, JSON.stringify(items), false);
+    if(!res){ showError('บันทึกข้อมูลไม่สำเร็จ ลองอีกครั้ง'); }
+  }catch(e){
+    showError('บันทึกข้อมูลไม่สำเร็จ: ' + (e.message || 'เกิดข้อผิดพลาด'));
+  }
+}
+
+function fmtMoney(n){ return '฿' + (n||0).toLocaleString(); }
+
+function render(){
+  const q = $('#searchInput').value.trim().toLowerCase();
+  const filtered = q ? items.filter(it =>
+      it.name.toLowerCase().includes(q) || (it.category||'').toLowerCase().includes(q))
+    : items;
+
+  $('#statTypes').textContent = items.length;
+  $('#statQty').textContent = items.reduce((s,it)=>s+(it.qty||0),0);
+  $('#statValue').textContent = fmtMoney(items.reduce((s,it)=>s+(it.qty||0)*(it.price||0),0));
+
+  if(filtered.length === 0){
+    grid.style.display = 'none';
+    emptyState.style.display = 'block';
+    $('#emptyTitle').textContent = items.length===0 ? 'ยังไม่มีต้นไม้ในสต็อก' : 'ไม่พบรายการที่ค้นหา';
+    $('#emptyDesc').textContent = items.length===0 ? 'เริ่มเพิ่มต้นไม้รายการแรกของร้านได้เลย' : 'ลองค้นหาด้วยคำอื่น';
+    $('#btnAddEmpty').style.display = items.length===0 ? 'inline-block' : 'none';
+    return;
+  }
+  emptyState.style.display = 'none';
+  grid.style.display = 'grid';
+  grid.innerHTML = filtered.map(item => `
+    <div class="card" data-id="${item.id}">
+      <div class="card-body">
+        <div class="card-actions">
+          <button class="icon-btn" data-action="edit" data-id="${item.id}" title="แก้ไข">✎</button>
+          <button class="icon-btn danger" data-action="delete" data-id="${item.id}" title="ลบ">✕</button>
+        </div>
+        <div class="price-tag">${fmtMoney(item.price)}</div>
+        ${item.image
+          ? `<img class="card-img" src="${item.image}" alt="${escapeHtml(item.name)}">`
+          : `<div class="card-noimg"><svg width="34" height="34" viewBox="0 0 44 44" fill="none"><path d="M22 4C10 4 4 14 4 24c0 8 6 14 14 14 0 0 0-8 4-14 4-6 12-8 12-8S30 4 22 4Z" fill="#c9bfa0"/></svg></div>`}
+        <div class="card-info">
+          <span class="card-cat">${escapeHtml(item.category)}</span>
+          <p class="card-name">${escapeHtml(item.name)}</p>
+          <div class="card-qty">คงเหลือ ${item.qty} ${escapeHtml(item.unit)}</div>
+        </div>
+      </div>
+      <div class="stake"></div>
+    </div>
+  `).join('');
+}
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str == null ? '' : str;
+  return d.innerHTML;
+}
+
+function toggleMeaningField(){
+  const isMongkol = $('#fCategory').value === 'ไม้มงคล';
+  $('#meaningField').style.display = isMongkol ? 'block' : 'none';
+}
+
+function resetForm(){
+  editingId = null;
+  pendingImage = null;
+  $('#modalTitle').textContent = 'เพิ่มต้นไม้ใหม่';
+  $('#fName').value = '';
+  $('#fCategory').value = 'ไม้ประดับ';
+  $('#fPrice').value = '';
+  $('#fCost').value = '';
+  $('#fQty').value = '';
+  $('#fUnit').value = 'ต้น';
+  $('#fNote').value = '';
+  $('#fMeaning').value = '';
+  $('#imgPreview').style.display = 'none';
+  $('#imgHint').style.display = 'block';
+  $('#imgInput').value = '';
+  setLookupStatus('');
+  toggleMeaningField();
+}
+
+function openModal(){ $('#modalOverlay').style.display = 'flex'; }
+function closeModal(){ $('#modalOverlay').style.display = 'none'; }
+
+function openEdit(id){
+  const item = items.find(it=>it.id===id);
+  if(!item) return;
+  editingId = id;
+  pendingImage = item.image || null;
+  $('#modalTitle').textContent = 'แก้ไขต้นไม้';
+  $('#fName').value = item.name;
+  $('#fCategory').value = item.category;
+  $('#fPrice').value = item.price;
+  $('#fCost').value = item.cost != null ? item.cost : '';
+  $('#fQty').value = item.qty;
+  $('#fUnit').value = item.unit;
+  $('#fNote').value = item.note || '';
+  $('#fMeaning').value = item.meaning || '';
+  if(item.image){
+    $('#imgPreview').src = item.image;
+    $('#imgPreview').style.display = 'block';
+    $('#imgHint').style.display = 'none';
+  } else {
+    $('#imgPreview').style.display = 'none';
+    $('#imgHint').style.display = 'block';
+  }
+  setLookupStatus('');
+  toggleMeaningField();
+  openModal();
+}
+
+function compressImage(file){
+  return new Promise((resolve, reject)=>{
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const maxW = 480;
+        const scale = Math.min(1, maxW / img.width);
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', 0.72));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+$('#btnAdd').addEventListener('click', ()=>{ resetForm(); openModal(); });
+$('#btnAddEmpty').addEventListener('click', ()=>{ resetForm(); openModal(); });
+$('#btnCancel').addEventListener('click', closeModal);
+$('#modalOverlay').addEventListener('click', e=>{ if(e.target === e.currentTarget) closeModal(); });
+$('#fCategory').addEventListener('change', toggleMeaningField);
+
+const VALID_CATS = ["ไม้ประดับ","ไม้ฟอกอากาศ","ไม้อวบน้ำ","ไม้ดอก","ไม้ผล","ไม้มงคล","อื่นๆ"];
+
+// ฐานข้อมูลพันธุ์ไม้ในตัว — ทำงานได้แบบออฟไลน์ ไม่ต้องต่อเน็ต
+const PLANT_DB = [
+  {name:"มอนสเตอร่า", category:"ไม้ประดับ", note:"ชอบแสงรำไร รดน้ำเมื่อดินแห้ง เช็ดใบเป็นระยะให้ใบเงางาม"},
+  {name:"ฟิโลเดนดรอน", category:"ไม้ประดับ", note:"ทนร่มได้ดี รดน้ำสัปดาห์ละ 1-2 ครั้ง ไม่ชอบดินแฉะ"},
+  {name:"ลิ้นมังกร", category:"ไม้ฟอกอากาศ", note:"ทนแล้งมาก รดน้ำน้อยได้ ชอบแสงสว่างแต่ไม่ต้องแดดจัด"},
+  {name:"เศรษฐีเรือนใน", category:"ไม้ฟอกอากาศ", meaning:"ชื่อเป็นมงคลด้านความมั่งคั่ง เชื่อว่าปลูกในบ้านช่วยเสริมฐานะ", note:"ชอบแสงรำไร ดินชื้นสม่ำเสมอ ฉีดพ่นน้ำที่ใบช่วยเพิ่มความชื้น"},
+  {name:"พลูด่าง", category:"ไม้ฟอกอากาศ", meaning:"เชื่อว่าเป็นไม้เงินไหลมาเทมา เสริมโชคลาภด้านการเงิน", note:"ปลูกง่าย ทนร่ม รดน้ำเมื่อดินผิวหน้าแห้ง เลื้อยเกาะได้ดี"},
+  {name:"ไทรใบสัก", category:"ไม้ประดับ", note:"ต้องการแสงสม่ำเสมอ ย้ายที่บ่อยจะทำใบร่วง รดน้ำพอชื้น"},
+  {name:"เดหลี", category:"ไม้ประดับ", note:"ชอบที่ร่มรำไร ดินชื้นแต่ไม่แฉะ เปลี่ยนน้ำในกระถางบ่อยๆถ้าปลูกในน้ำ"},
+  {name:"ว่านหางจระเข้", category:"ไม้อวบน้ำ", note:"ทนแล้ง รดน้ำเมื่อดินแห้งสนิท ชอบแดดเต็มวันถึงรำไร"},
+  {name:"กระบองเพชร", category:"ไม้อวบน้ำ", note:"ต้องการแดดจัด รดน้ำน้อยมาก ดินต้องระบายน้ำดี"},
+  {name:"กุหลาบหิน", category:"ไม้อวบน้ำ", note:"ชอบแดดครึ่งวัน รดน้ำเมื่อดินแห้งสนิท ระวังน้ำขังที่ใบ"},
+  {name:"เฟื่องฟ้า", category:"ไม้ดอก", note:"ชอบแดดจัดจึงออกดอกดี ปล่อยดินแห้งบ้างก่อนรดน้ำรอบใหม่"},
+  {name:"ชวนชม", category:"ไม้ดอก", meaning:"เชื่อว่าเป็นไม้แห่งความรักและความมั่งคั่ง ลำต้นอวบใหญ่ยิ่งเสริมฐานะ", note:"ต้องการแดดเต็มวัน ดินระบายน้ำดี รดน้ำพอชุ่มไม่แฉะ"},
+  {name:"กุหลาบ", category:"ไม้ดอก", note:"ต้องการแดดอย่างน้อย 6 ชม./วัน ตัดแต่งกิ่งหลังดอกโรยเพื่อกระตุ้นดอกใหม่"},
+  {name:"มะลิ", category:"ไม้ดอก", note:"ชอบแดดจัด รดน้ำสม่ำเสมอ ใส่ปุ๋ยกระตุ้นดอกเดือนละครั้ง"},
+  {name:"ดาวเรือง", category:"ไม้ดอก", note:"ปลูกง่าย ชอบแดดจัด รดน้ำทุกวัน เก็บดอกโรยทิ้งบ่อยๆ"},
+  {name:"บานชื่น", category:"ไม้ดอก", note:"ชอบแดดจัด ทนแล้งพอควร รดน้ำวันเว้นวัน"},
+  {name:"ทานตะวัน", category:"ไม้ดอก", note:"ต้องการแดดเต็มวัน ดินร่วนระบายน้ำดี รดน้ำสม่ำเสมอ"},
+  {name:"ลีลาวดี", category:"ไม้ดอก", note:"ทนแล้ง ชอบแดดจัด รดน้ำพอชื้นในช่วงออกดอก งดน้ำช่วงพักตัว"},
+  {name:"บัว", category:"ไม้ดอก", note:"ปลูกในน้ำหรือดินโคลนชื้น ต้องการแดดเต็มวันจึงออกดอกดี"},
+  {name:"จำปี", category:"ไม้ดอก", note:"ชอบแดดรำไรถึงเต็มวัน ดินร่วนชุ่มชื้น กลิ่นหอมช่วงเย็น"},
+  {name:"จำปา", category:"ไม้ดอก", note:"ชอบแดดจัด ดินระบายน้ำดี รดน้ำสม่ำเสมอ"},
+  {name:"การเวก", category:"ไม้ดอก", note:"ชอบแดดรำไร เลื้อยได้ไกล ดอกหอมช่วงค่ำ รดน้ำพอชื้น"},
+  {name:"ชบา", category:"ไม้ดอก", note:"ชอบแดดจัด ออกดอกทั้งปีถ้าดูแลดี ตัดแต่งกิ่งกระตุ้นดอกใหม่ได้"},
+  {name:"พวงชมพู", category:"ไม้ดอก", note:"ชอบแดดจัด ทนแล้งดี รดน้ำเมื่อดินแห้ง"},
+  {name:"อโศก", category:"ไม้ประดับ", note:"นิยมปลูกแนวรั้ว ต้องการแดดพอควร รดน้ำสม่ำเสมอช่วงต้นเล็ก"},
+  {name:"ไทร", category:"ไม้ประดับ", note:"ทนทาน ปรับตัวง่าย ต้องการแดดพอควร ตัดแต่งทรงได้บ่อย"},
+  {name:"หมากเขียว", category:"ไม้ประดับ", note:"ชอบแดดรำไรถึงเต็มวัน รดน้ำสม่ำเสมอ นิยมปลูกแถวรั้ว"},
+  {name:"หมากผู้หมากเมีย", category:"ไม้ประดับ", meaning:"เชื่อว่าเสริมความรักความสมัครสมานในครอบครัว นิยมปลูกคู่กัน", note:"ทนร่มได้ดี ใบมีลายสวย รดน้ำพอชื้น หลีกเลี่ยงแดดจัดจนใบไหม้"},
+  {name:"จั๋ง", category:"ไม้ประดับ", note:"ทนร่ม โตช้า เหมาะปลูกในกระถาง รดน้ำพอชื้นสม่ำเสมอ"},
+  {name:"อินทนิล", category:"ไม้ดอก", note:"ไม้ยืนต้นดอกสีม่วง ต้องการแดดจัด ทนแล้งเมื่อโตเต็มที่"},
+  {name:"ตะแบก", category:"ไม้ดอก", note:"ไม้ยืนต้น ต้องการแดดจัด ทนแล้งได้ดีเมื่อรากตั้งตัวแล้ว"},
+  {name:"ประดู่", category:"ไม้ดอก", note:"ไม้ยืนต้นดอกสีเหลือง ต้องการแดดจัด ทนแล้งได้ดี"},
+  {name:"ราชพฤกษ์", category:"ไม้ดอก", meaning:"ต้นไม้ประจำชาติไทย เชื่อว่าเสริมเกียรติยศและความเป็นใหญ่", note:"หรือคูน ดอกเหลืองช่วงหน้าร้อน ต้องการแดดจัด ทนแล้ง"},
+  {name:"จิก", category:"ไม้ประดับ", note:"หรือจิกน้ำ นิยมปลูกริมน้ำ ต้องการแดดพอควร ดินชื้นสม่ำเสมอ"},
+  {name:"มะม่วง", category:"ไม้ผล", note:"ต้องการแดดจัด รดน้ำสม่ำเสมอช่วงต้นเล็ก งดน้ำก่อนออกดอกเพื่อกระตุ้นการติดผล"},
+  {name:"มะนาว", category:"ไม้ผล", note:"ชอบแดดจัด ดินระบายน้ำดี ใส่ปุ๋ยสม่ำเสมอเพื่อผลดก"},
+  {name:"ขนุน", category:"ไม้ผล", note:"ต้องการแดดจัด ดินร่วนระบายน้ำดี รดน้ำสม่ำเสมอช่วงติดผล"},
+  {name:"ส้มโอ", category:"ไม้ผล", note:"ชอบแดดจัด ดินระบายน้ำดี ต้องการปุ๋ยธาตุอาหารสม่ำเสมอ"},
+  {name:"ทุเรียน", category:"ไม้ผล", note:"ต้องการแดดจัด น้ำสม่ำเสมอแต่ระบายน้ำดี ดูแลเป็นพิเศษช่วงติดผล"},
+  {name:"มะพร้าว", category:"ไม้ผล", note:"ทนแล้งเมื่อโตเต็มที่ ต้องการแดดจัด ดินระบายน้ำดี"},
+  {name:"กล้วย", category:"ไม้ผล", note:"ต้องการน้ำสม่ำเสมอ แดดจัด เจริญเติบโตไว"},
+  {name:"เตยหอม", category:"อื่นๆ", note:"ชอบดินชื้น แดดรำไร ปลูกง่ายแตกกอเร็ว"},
+
+  // ไม้ใบประดับ (เพิ่มเติม)
+  {name:"ยางอินเดีย", category:"ไม้ประดับ", note:"ทนแดดถึงร่มรำไร รดน้ำเมื่อดินแห้ง เช็ดใบให้เงางามสม่ำเสมอ"},
+  {name:"บอน", category:"ไม้ประดับ", note:"ชอบร่มรำไร ดินชื้นสม่ำเสมอ หลีกเลี่ยงแดดจัดจนใบไหม้"},
+  {name:"คล้า", category:"ไม้ประดับ", note:"ชอบร่มรำไร ความชื้นสูง ฉีดพ่นน้ำที่ใบช่วยให้สีสวย"},
+  {name:"เขียวหมื่นปี", category:"ไม้ประดับ", note:"ทนร่มได้ดี รดน้ำพอชื้น เหมาะปลูกในบ้าน/ออฟฟิศ"},
+  {name:"เศรษฐีพันล้าน", category:"ไม้ประดับ", meaning:"ชื่อเป็นมงคลตรงตัว เชื่อว่าเสริมความร่ำรวยและโชคลาภ", note:"ทนร่มรำไร รดน้ำเมื่อดินแห้ง"},
+  {name:"หมากเหลือง", category:"ไม้ประดับ", note:"ชอบแดดรำไรถึงเต็มวัน รดน้ำสม่ำเสมอ นิยมปลูกแนวรั้ว"},
+  {name:"ไทรเกาหลี", category:"ไม้ประดับ", note:"ทนทาน ตัดแต่งทรงง่าย ต้องการแดดพอควร รดน้ำสม่ำเสมอ"},
+  {name:"ซองออฟอินเดีย", category:"ไม้ประดับ", note:"ใบมีลายสวย ทนร่มรำไร รดน้ำพอชื้น หลีกเลี่ยงน้ำขัง"},
+  {name:"เศรษฐีเรือนนอก", category:"ไม้ประดับ", meaning:"เชื่อว่าเสริมโชคลาภและความมั่งคั่งเช่นเดียวกับเศรษฐีเรือนใน", note:"ทนแล้งพอควร ต้องการแสงสว่างแต่ไม่ต้องแดดจัด"},
+  {name:"โกสน", category:"ไม้ประดับ", note:"ใบมีสีสันสวยงาม ต้องการแดดจัดจึงจะสีเข้ม รดน้ำสม่ำเสมอ"},
+
+  // ไม้ดอก (เพิ่มเติม)
+  {name:"หน้าวัว", category:"ไม้ดอก", note:"ชอบร่มรำไร ความชื้นสูง ดินระบายน้ำดี หลีกเลี่ยงแดดจัด"},
+  {name:"กล้วยไม้", category:"ไม้ดอก", note:"ชอบแสงรำไรและความชื้นสูง รดน้ำเช้าให้แห้งก่อนค่ำ ไม่ชอบน้ำขังราก"},
+  {name:"แววมยุรา", category:"ไม้ดอก", note:"ชอบแดดรำไรถึงเต็มวัน ดินชื้นสม่ำเสมอ ออกดอกดกตลอดปี"},
+  {name:"เข็ม", category:"ไม้ดอก", note:"ชอบแดดจัด ทนแล้งพอควร ตัดแต่งกิ่งกระตุ้นดอกใหม่ได้"},
+  {name:"พุทธรักษา", category:"ไม้ดอก", note:"ชอบแดดจัด ดินชื้น ปลูกง่ายแตกกอเร็ว"},
+  {name:"แก้ว", category:"ไม้ดอก", note:"ดอกหอมกลิ่นแรง ชอบแดดจัด ทนแล้งได้ดีเมื่อโตแล้ว"},
+  {name:"โมก", category:"ไม้ดอก", note:"ชอบแดดจัดถึงรำไร ทนแล้ง ตัดแต่งทรงพุ่มได้ง่าย"},
+  {name:"พลับพลึง", category:"ไม้ดอก", note:"ชอบแดดรำไรถึงเต็มวัน ดินชื้น ปลูกง่ายทนทาน"},
+  {name:"ปีบ", category:"ไม้ดอก", note:"ไม้ยืนต้นดอกหอมช่วงเย็น-กลางคืน ต้องการแดดจัด ทนแล้ง"},
+  {name:"เบญจมาศ", category:"ไม้ดอก", note:"ชอบแดดจัด อากาศเย็น ดินระบายน้ำดี ใส่ปุ๋ยกระตุ้นดอกสม่ำเสมอ"},
+
+  // ไม้ฟอกอากาศ (เพิ่มเติม)
+  {name:"กวักมรกต", category:"ไม้ฟอกอากาศ", meaning:"เชื่อว่าเป็นไม้กวักเรียกทรัพย์ เสริมโชคลาภด้านการเงิน", note:"ทนแล้งและร่มได้ดีมาก รดน้ำห่างๆ เหมาะปลูกในอาคาร"},
+  {name:"พลูฉีก", category:"ไม้ฟอกอากาศ", note:"ชอบร่มรำไร ดินชื้นสม่ำเสมอ เลื้อยเกาะได้ดี"},
+  {name:"เฟินใบมะขาม", category:"ไม้ฟอกอากาศ", note:"ชอบความชื้นสูงและร่มรำไร ฉีดพ่นน้ำสม่ำเสมอ"},
+
+  // ไม้อวบน้ำ (เพิ่มเติม)
+  {name:"คาแลนโช", category:"ไม้อวบน้ำ", note:"ชอบแดดรำไรถึงเต็มวัน รดน้ำเมื่อดินแห้ง ดอกดกช่วงอากาศเย็น"},
+
+  // ไม้ผล (เพิ่มเติม)
+  {name:"ฝรั่ง", category:"ไม้ผล", note:"ต้องการแดดจัด ทนแล้งได้ดี รดน้ำสม่ำเสมอช่วงติดผล"},
+  {name:"น้อยหน่า", category:"ไม้ผล", note:"ชอบแดดจัด ทนแล้งดี ดินระบายน้ำดี"},
+  {name:"มะละกอ", category:"ไม้ผล", note:"ต้องการแดดจัด น้ำสม่ำเสมอ โตเร็วให้ผลไว"},
+  {name:"แก้วมังกร", category:"ไม้ผล", note:"ไม้เลื้อยตระกูลกระบองเพชร ต้องการแดดจัด รดน้ำพอชื้น"},
+  {name:"ลำไย", category:"ไม้ผล", note:"ต้องการแดดจัด ทนแล้งได้ดีเมื่อโตเต็มที่"},
+  {name:"ลิ้นจี่", category:"ไม้ผล", note:"ต้องการแดดจัด อากาศเย็นช่วยกระตุ้นการออกดอก"},
+  {name:"เงาะ", category:"ไม้ผล", note:"ต้องการแดดจัด น้ำสม่ำเสมอ ดินชุ่มชื้นแต่ระบายน้ำดี"},
+  {name:"มังคุด", category:"ไม้ผล", note:"ชอบร่มรำไรตอนเล็ก โตเต็มที่ต้องการแดดจัด น้ำสม่ำเสมอ"},
+  {name:"ชมพู่", category:"ไม้ผล", note:"ต้องการแดดจัด น้ำสม่ำเสมอช่วงติดผล"},
+  {name:"สับปะรด", category:"ไม้ผล", note:"ทนแล้งดี ต้องการแดดจัด ดินระบายน้ำดี"},
+  {name:"มะเฟือง", category:"ไม้ผล", note:"ต้องการแดดจัด น้ำสม่ำเสมอ ให้ผลตลอดปีถ้าดูแลดี"},
+  {name:"มะขาม", category:"ไม้ผล", note:"ทนแล้งมากเมื่อโตเต็มที่ ต้องการแดดจัด"},
+  {name:"องุ่น", category:"ไม้ผล", note:"ต้องการแดดจัดเต็มวัน ทำค้างให้เลื้อย ตัดแต่งกิ่งกระตุ้นผล"},
+
+  // สมุนไพร/ครัวเรือน
+  {name:"โหระพา", category:"อื่นๆ", note:"ชอบแดดจัด รดน้ำสม่ำเสมอ เก็บยอดบ่อยช่วยแตกกอ"},
+  {name:"กะเพรา", category:"อื่นๆ", note:"ชอบแดดจัด ทนแล้งพอควร เก็บยอดบ่อยช่วยแตกใบใหม่"},
+  {name:"สะระแหน่", category:"อื่นๆ", note:"ชอบดินชื้น แดดรำไรถึงเต็มวัน แผ่กอไวควรควบคุมพื้นที่ปลูก"},
+  {name:"ตะไคร้", category:"อื่นๆ", note:"ทนแล้งดี ชอบแดดจัด ปลูกง่ายแตกกอเร็ว"},
+  {name:"ข่า", category:"อื่นๆ", note:"ชอบร่มรำไรถึงแดดจัด ดินชื้น ปลูกง่ายทนทาน"},
+  {name:"ขิง", category:"อื่นๆ", note:"ชอบร่มรำไร ดินร่วนชุ่มชื้น ระวังน้ำขังจนเหง้าเน่า"},
+
+  // ไม้มงคล
+  {name:"โป๊ยเซียน", category:"ไม้มงคล", meaning:"เชื่อว่านำโชคลาภทั้ง 8 ประการมาให้ ยิ่งดอกดกยิ่งเสริมมงคล", note:"ชอบแดดจัด ทนแล้ง ดินระบายน้ำดี"},
+  {name:"ไผ่มงคล", category:"ไม้มงคล", meaning:"หรือไผ่กวนอิม เชื่อว่านำความเจริญรุ่งเรืองและความสงบร่มเย็นมาสู่บ้าน", note:"ปลูกในน้ำหรือดินชื้นก็ได้ ทนร่ม ดูแลง่าย"},
+  {name:"ทองอุไร", category:"ไม้มงคล", meaning:"ดอกสีทองอร่าม เชื่อว่าเสริมโชคลาภและความมั่งคั่งด้านการเงิน", note:"ชอบแดดจัด ทนแล้ง ออกดอกดกทั้งปี"},
+  {name:"มะยม", category:"ไม้มงคล", meaning:"เชื่อว่าปลูกไว้หน้าบ้านช่วยให้เป็นที่นิยมชมชอบ มีคนอุดหนุนค้าขายดี", note:"ต้องการแดดจัด ทนแล้ง ดูแลง่าย"},
+  {name:"มะกรูด", category:"ไม้มงคล", meaning:"เชื่อว่าช่วยปัดเป่าสิ่งไม่ดี เสริมสิริมงคลและความเป็นระเบียบในบ้าน", note:"ต้องการแดดจัด ดินระบายน้ำดี"},
+  {name:"ชัยพฤกษ์", category:"ไม้มงคล", meaning:"ชื่อเป็นมงคลหมายถึงชัยชนะ เชื่อว่าปลูกแล้วช่วยให้ประสบความสำเร็จ", note:"ดอกสีชมพู ต้องการแดดจัด ทนแล้งเมื่อโตเต็มที่"},
+  {name:"นางแย้ม", category:"ไม้มงคล", meaning:"เชื่อว่าเสริมเสน่ห์ ทำให้เป็นที่รักและมีเสน่ห์ดึงดูดผู้คน", note:"ดอกหอม ชอบร่มรำไรถึงแดดจัด รดน้ำสม่ำเสมอ"},
+  {name:"ดอกรัก", category:"ไม้มงคล", meaning:"ชื่อเป็นมงคลด้านความรัก เชื่อว่าเสริมความรักความผูกพันในครอบครัว", note:"ชอบแดดจัด ทนแล้ง ดอกสีขาวหอม"},
+  {name:"ทับทิม", category:"ไม้มงคล", meaning:"ผลสีแดงเชื่อว่าเสริมโชคลาภ ความอุดมสมบูรณ์ และเงินทอง", note:"ต้องการแดดจัด ทนแล้ง ดินระบายน้ำดี"},
+  {name:"ไทรทอง", category:"ไม้มงคล", meaning:"เชื่อว่าเสริมความเจริญรุ่งเรืองและความร่มเย็นเป็นสุขในครอบครัว", note:"ทนทาน ต้องการแดดพอควร ตัดแต่งทรงได้บ่อย"},
+  {name:"เงินไหลมา", category:"ไม้มงคล", meaning:"ชื่อเป็นมงคลตรงตัว เชื่อว่าเสริมให้เงินทองไหลมาเทมาไม่ขาดสาย", note:"ทนร่ม รดน้ำพอชื้น เหมาะปลูกในบ้าน/ออฟฟิศ"}
+];
+
+function populateNameSuggestions(){
+  const dl = $('#plantNameSuggestions');
+  dl.innerHTML = PLANT_DB.map(p => `<option value="${escapeHtml(p.name)}">`).join('');
+}
+
+function setLookupStatus(msg, isError){
+  const el = $('#lookupStatus');
+  el.textContent = msg;
+  el.classList.toggle('error', !!isError);
+}
+
+function lookupPlantInfo(){
+  const name = $('#fName').value.trim();
+  if(!name){ setLookupStatus('พิมพ์ชื่อต้นไม้ก่อนค้นหา', true); return; }
+
+  // หาแบบตรงชื่อก่อน แล้วค่อยหาแบบมีคำอยู่ในชื่อ (กันเผื่อพิมพ์เพิ่มเช่น "ต้นมะลิ")
+  let match = PLANT_DB.find(p => p.name === name);
+  if(!match) match = PLANT_DB.find(p => name.includes(p.name) || p.name.includes(name));
+
+  if(!match){
+    setLookupStatus('ไม่พบในฐานข้อมูล กรุณาเลือกหมวดหมู่และกรอกหมายเหตุเอง', true);
+    return;
+  }
+  $('#fCategory').value = match.category;
+  $('#fNote').value = match.note;
+  setLookupStatus(`เติมข้อมูล "${match.name}" จากฐานข้อมูลแล้ว ✓`);
+}
+
+$('#btnLookup').addEventListener('click', lookupPlantInfo);
+$('#searchInput').addEventListener('input', render);
+
+$('#imgInput').addEventListener('change', async e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  try{
+    const dataUrl = await compressImage(file);
+    pendingImage = dataUrl;
+    $('#imgPreview').src = dataUrl;
+    $('#imgPreview').style.display = 'block';
+    $('#imgHint').style.display = 'none';
+  }catch(err){
+    showError('อ่านรูปภาพไม่สำเร็จ');
+  }
+});
+
+$('#itemForm').addEventListener('submit', async e=>{
+  e.preventDefault();
+  const name = $('#fName').value.trim();
+  if(!name){ showError('กรุณาใส่ชื่อต้นไม้'); return; }
+  const btnSave = $('#btnSave');
+  btnSave.disabled = true;
+  btnSave.textContent = 'กำลังบันทึก...';
+
+  const record = {
+    id: editingId || (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())),
+    name: name,
+    category: $('#fCategory').value,
+    price: parseFloat($('#fPrice').value) || 0,
+    cost: $('#fCost').value !== '' ? (parseFloat($('#fCost').value) || 0) : null,
+    qty: parseInt($('#fQty').value) || 0,
+    unit: $('#fUnit').value.trim() || 'ต้น',
+    image: pendingImage,
+    note: $('#fNote').value,
+    meaning: $('#fCategory').value === 'ไม้มงคล' ? $('#fMeaning').value.trim() : '',
+    createdAt: editingId ? (items.find(it=>it.id===editingId)||{}).createdAt || new Date().toISOString() : new Date().toISOString()
+  };
+
+  if(editingId){
+    items = items.map(it => it.id === editingId ? record : it);
+  } else {
+    items = [record, ...items];
+  }
+  await persist();
+  render();
+  btnSave.disabled = false;
+  btnSave.textContent = 'บันทึก';
+  closeModal();
+});
+
+grid.addEventListener('click', e=>{
+  const btn = e.target.closest('button[data-action]');
+  if(!btn) return;
+  const id = btn.dataset.id;
+  if(btn.dataset.action === 'edit') openEdit(id);
+  if(btn.dataset.action === 'delete'){
+    deleteTargetId = id;
+    $('#deleteOverlay').style.display = 'flex';
+  }
+});
+
+$('#btnCancelDelete').addEventListener('click', ()=>{ $('#deleteOverlay').style.display = 'none'; deleteTargetId = null; });
+$('#deleteOverlay').addEventListener('click', e=>{ if(e.target === e.currentTarget){ $('#deleteOverlay').style.display='none'; deleteTargetId=null; } });
+$('#btnConfirmDelete').addEventListener('click', async ()=>{
+  if(deleteTargetId){
+    items = items.filter(it => it.id !== deleteTargetId);
+    await persist();
+    render();
+  }
+  $('#deleteOverlay').style.display = 'none';
+  deleteTargetId = null;
+});
+
+populateNameSuggestions();
+loadItems();
+</script>
+</body>
+</html>
